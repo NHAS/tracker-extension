@@ -12,7 +12,19 @@ Grab the currently playing YouTube Music track and ship its video id to a local 
 
 For a permanent install, sign the extension via [Firefox Add-on Developer Hub](https://addons.mozilla.org/developers/).
 
+Or used the signed extension in `web-ext-artifacts` 
+
 ---
+
+
+## Building
+
+```sh
+web-ext lint --self-hosted
+web-ext build --overwrite-dest
+```
+
+Then uplaod to the mozilla extensions platform
 
 ## Usage
 
