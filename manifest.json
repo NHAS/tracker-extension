@@ -1,0 +1,56 @@
+{
+  "manifest_version": 2,
+  "name": "YTMusic Grabber",
+  "version": "1.1.0",
+  "description": "Grab the currently playing YouTube Music track and send it to your yt-dlp service.",
+  "icons": {
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "https://music.youtube.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://music.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://music.youtube.com/*"
+      ],
+      "js": [
+        "content-relay.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "ext+ytdl",
+      "name": "YTMusic Grabber",
+      "uriTemplate": "/registration.html#!/%s"
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon48.png"
+    },
+    "default_title": "YTMusic Grabber"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  }
+}

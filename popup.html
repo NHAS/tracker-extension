@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YTMusic Grabber</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #0d0d0f;
+      --surface: #161619;
+      --border:  #2a2a30;
+      --accent:  #ff4d4d;
+      --accent2: #ff8c42;
+      --text:    #f0eee8;
+      --muted:   #7a7a8a;
+      --success: #4dffb4;
+      --error:   #ff4d6d;
+      --radius:  6px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 320px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo {
+      width: 26px; height: 26px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+    }
+    header h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    }
+    header p { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+    /* Status pill */
+    #live-status {
+      display: flex; align-items: center; gap: 6px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px; color: var(--muted);
+      font-family: 'Space Mono', monospace;
+    }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+    }
+    .dot.active { background: var(--success); box-shadow: 0 0 6px var(--success); }
+    .dot.error  { background: var(--error);   box-shadow: 0 0 6px var(--error); }
+
+    /* Last sent track */
+    #last-track {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      min-height: 58px;
+    }
+    #last-track .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    #last-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+    #last-artist { font-size: 11px; color: var(--muted); }
+    #last-url {
+      font-family: 'Space Mono', monospace; font-size: 9px;
+      color: var(--accent2); margin-top: 5px; word-break: break-all; opacity: 0.8;
+    }
+    .empty { color: var(--muted); font-size: 12px; font-style: italic; }
+
+    /* Log */
+    #log-wrap {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    #log-wrap .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    #log {
+      background: #0a0a0c;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px;
+      height: 80px;
+      overflow-y: auto;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    #log .ok   { color: var(--success); }
+    #log .fail { color: var(--error); }
+    #log .info { color: var(--accent2); }
+
+    /* Settings */
+    .settings { padding: 14px; }
+    .settings .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    label {
+      display: block; font-size: 10px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted); letter-spacing: 0.05em;
+      text-transform: uppercase; margin-bottom: 4px;
+    }
+    input[type="text"], input[type="url"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      padding: 8px 10px;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus { border-color: var(--accent); }
+    .hint { font-size: 10px; color: var(--muted); margin-top: -8px; margin-bottom: 12px; line-height: 1.5; }
+
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      width: 100%; padding: 9px;
+      border: none; border-radius: var(--radius);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+      cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+      text-transform: uppercase;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+    #save-msg {
+      margin-top: 8px; font-family: 'Space Mono', monospace;
+      font-size: 10px; text-align: center; min-height: 16px;
+    }
+    #save-msg.ok   { color: var(--success); }
+    #save-msg.fail { color: var(--error); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🎵</div>
+  <div>
+    <h1>YTMusic Grabber</h1>
+    <p>Auto-sends every new track</p>
+  </div>
+</header>
+
+<div id="live-status">
+  <div class="dot" id="dot"></div>
+  <span id="status-text">Connecting...</span>
+</div>
+
+<div class="settings">
+  <label for="service-url">Service</label>
+  <input type="url" id="service-url" placeholder="http://localhost:8080/" />
+
+  <label for="api-key">API Key</label>
+  <input type="text" id="api-key" placeholder="key" />
+  <p class="hint">API key for authenticating to service</p>
+
+
+  <button class="btn btn-primary" id="btn-save">💾 Save</button>
+  <div id="save-msg"></div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
