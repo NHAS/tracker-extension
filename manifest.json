@@ -52,5 +52,13 @@
       "background.js"
     ],
     "persistent": false
+  },
+  "browser_specific_settings": {
+  "gecko": {
+    "id": "@tracker-id-youtube-nhas",
+    "data_collection_permissions": {
+      "required": ["websiteContent", "browsingActivity"]
+    }
   }
+}
 }
