@@ -1,16 +1,19 @@
 {
   "manifest_version": 2,
   "name": "YTMusic Grabber",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Grab the currently playing YouTube Music track and send it to your yt-dlp service.",
   "icons": {
     "48": "icons/icon48.png",
     "96": "icons/icon96.png"
   },
   "permissions": [
-    "activeTab",
     "storage",
     "https://music.youtube.com/*"
+  ],
+  "optional_permissions": [
+    "http://*/*",
+    "https://*/*"
   ],
   "content_scripts": [
     {

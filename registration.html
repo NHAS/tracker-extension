@@ -1,14 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YTMusic Grabber — Registration</title>
-  <link rel="stylesheet" href="popup.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #161619;
+      --border: #2a2a30;
+      --accent: #ff4d4d;
+      --accent2: #ff8c42;
+      --text: #f0eee8;
+      --muted: #7a7a8a;
+      --success: #4dffb4;
+      --error: #ff4d6d;
+      --radius: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .card {
+      width: 320px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 26px;
+      height: 26px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    header p {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .status-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      background: #1e1e24;
+      border: 1px solid var(--border);
+    }
+
+    .status-text .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .status-text .value {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+    }
+
+    .value.waiting {
+      color: var(--muted);
+    }
+
+    .value.ready {
+      color: var(--accent2);
+    }
+
+    .value.ok {
+      color: var(--success);
+    }
+
+    .value.fail {
+      color: var(--error);
+    }
+
+    .detail {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      min-height: 44px;
+      background: #0a0a0c;
+    }
+
+    .detail .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    #detail-value {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--accent2);
+      word-break: break-all;
+      opacity: 0.85;
+    }
+
+    #detail-value.empty {
+      color: var(--muted);
+      font-style: italic;
+      opacity: 1;
+    }
+
+    .perms {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .perms .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .perm-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      padding: 4px 0;
+      border-bottom: 1px solid #2a2a3030;
+    }
+
+    .perm-row:last-child {
+      border-bottom: none;
+    }
+
+    .perm-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent2);
+      flex-shrink: 0;
+    }
+
+    .body {
+      padding: 14px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 9px;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      text-transform: uppercase;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+  </style>
 </head>
+
 <body>
-  <h2>YTMusic Grabber</h2>
-  <p id="status">Registering your service…</p>
-  <p id="detail"></p>
+  <div class="card">
+    <header>
+      <div class="logo">🎵</div>
+      <div>
+        <h1>YTMusic Grabber</h1>
+        <p>Service registration</p>
+      </div>
+    </header>
+
+    <div class="status-bar">
+      <div class="status-icon" id="status-icon">⏳</div>
+      <div class="status-text">
+        <div class="label">Status</div>
+        <div class="value waiting" id="status-value">Waiting for confirmation</div>
+      </div>
+    </div>
+
+    <div class="detail">
+      <div class="label">Service endpoint</div>
+      <div id="detail-value" class="empty">—</div>
+    </div>
+
+    <div class="body">
+      <div class="perms">
+        <div class="label">Permissions requested</div>
+        <div class="perm-row">
+          <div class="perm-dot"></div>Access to service URL origin
+        </div>
+        <div class="perm-row">
+          <div class="perm-dot"></div>Store API key locally
+        </div>
+      </div>
+      <button class="btn btn-primary" id="register" disabled>⚡ Register</button>
+    </div>
+  </div>
+
+  <script defer src="registration.js"></script>
 </body>
-<script src="registration.js"></script>
+
 </html>

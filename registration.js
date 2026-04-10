@@ -1,34 +1,60 @@
-// registration.js — handles ext+ytdl://register?url=...&key=...
-(async () => {
-  const status = document.getElementById('status');
-  const detail = document.getElementById('detail');
+const statusIcon  = document.getElementById('status-icon');
+const statusValue = document.getElementById('status-value');
+const detailValue = document.getElementById('detail-value');
+const registerButton = document.getElementById('register');
 
+function setStatus(state, text) {
+  const icons = { waiting: '⏳', ready: '🔑', ok: '✓', fail: '✗' };
+  statusIcon.textContent = icons[state] || '⏳';
+  statusIcon.className = 'status-icon ' + state;
+  statusValue.textContent = text;
+  statusValue.className = 'value ' + state;
+}
+
+function getRegistrationInfo() {
+  const raw = location.search || location.hash;
+  const match = decodeURIComponent(raw).match(/ext\+ytdl:\/\/[^?]*\??(.*)/);
+  if (!match) throw new Error('No registration URI found');
+  const params = new URLSearchParams(match[1]);
+  const serviceUrl = params.get('url');
+  const apiKey     = params.get('key');
+  if (!serviceUrl) throw new Error('Missing required param: url');
+  if (!apiKey)     throw new Error('Missing required param: key');
+  return { apiKey, serviceUrl };
+}
+
+async function register(apiKey, serviceUrl) {
+  setStatus('waiting', 'Requesting permissions...');
   try {
-    // Firefox passes the full custom URI as the page's location.href
-    // e.g. moz-extension://.../registration.html#ext+ytdl://register?url=...&key=...
-    // OR the query string is forwarded — check both.
-    const raw = location.search || location.hash;
-    
-    // Extract the ext+ytdl URI from wherever Firefox put it
-    const match = decodeURIComponent(raw).match(/ext\+ytdl:\/\/[^?]*\??(.*)/);
-    if (!match) throw new Error('No registration URI found in: ' + raw);
-
-    const params = new URLSearchParams(match[1]);
-    const serviceUrl = params.get('url');
-    const apiKey     = params.get('key');
-
-    if (!serviceUrl) throw new Error('Missing required param: url');
-    if (!apiKey)     throw new Error('Missing required param: key');
-
+    if (!serviceUrl.endsWith('/')) serviceUrl += '/';
+    const granted = await browser.permissions.request({
+      permissions: [], origins: [serviceUrl]
+    });
+    if (!granted) throw new Error(`Permissions for ${serviceUrl} were not granted`);
     await browser.storage.local.set({ serviceUrl, apiKey });
-
-    status.textContent = '✓ Registration successful! You may now close this tab';
-    status.className   = 'ok';
-    detail.textContent = `Service URL: ${serviceUrl}`;
+    setStatus('ok', 'Registration successful');
+    detailValue.textContent = serviceUrl;
+    detailValue.className = 'value';
+    registerButton.disabled = true;
+    registerButton.textContent = '✓ Done — you may close this tab';
   } catch (err) {
-    status.textContent = '✗ Registration failed.';
-    status.className   = 'fail';
-    detail.textContent = err.message;
+    setStatus('fail', 'Registration failed');
+    detailValue.textContent = err.message;
+    detailValue.style.color = 'var(--error)';
     console.error('[YTMusic Grabber] Registration error:', err);
   }
-})();
+}
+
+try {
+  const { apiKey, serviceUrl } = getRegistrationInfo();
+  detailValue.textContent = serviceUrl;
+  detailValue.className = 'value';
+  setStatus('ready', 'Ready to register');
+  registerButton.removeAttribute('disabled');
+  registerButton.addEventListener('click', () => register(apiKey, serviceUrl));
+} catch (err) {
+  setStatus('fail', 'Failed to parse registration URI');
+  detailValue.textContent = err.message;
+  detailValue.style.color = 'var(--error)';
+  console.error('[YTMusic Grabber] Registration error:', err);
+}
