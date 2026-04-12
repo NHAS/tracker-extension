@@ -1,4 +1,4 @@
-const statusIcon  = document.getElementById('status-icon');
+const statusIcon = document.getElementById('status-icon');
 const statusValue = document.getElementById('status-value');
 const detailValue = document.getElementById('detail-value');
 const registerButton = document.getElementById('register');
@@ -17,20 +17,29 @@ function getRegistrationInfo() {
   if (!match) throw new Error('No registration URI found');
   const params = new URLSearchParams(match[1]);
   const serviceUrl = params.get('url');
-  const apiKey     = params.get('key');
+  const apiKey = params.get('key');
   if (!serviceUrl) throw new Error('Missing required param: url');
-  if (!apiKey)     throw new Error('Missing required param: key');
+  if (!apiKey) throw new Error('Missing required param: key');
   return { apiKey, serviceUrl };
 }
 
 async function register(apiKey, serviceUrl) {
   setStatus('waiting', 'Requesting permissions...');
   try {
-    if (!serviceUrl.endsWith('/')) serviceUrl += '/';
+    let permissionsServiceName = serviceUrl
+    if (!permissionsServiceName.endsWith('/')) {
+      permissionsServiceName += '/';
+    }
+
     const granted = await browser.permissions.request({
-      permissions: [], origins: [serviceUrl]
+      permissions: [], origins: [permissionsServiceName]
     });
-    if (!granted) throw new Error(`Permissions for ${serviceUrl} were not granted`);
+    if (!granted) throw new Error(`Permissions for ${permissionsServiceName} were not granted`);
+
+    if(serviceUrl.endsWith('/')) {
+      serviceUrl = serviceUrl.slice(0, -1)
+    }
+
     await browser.storage.local.set({ serviceUrl, apiKey });
     setStatus('ok', 'Registration successful');
     detailValue.textContent = serviceUrl;
