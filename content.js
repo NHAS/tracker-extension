@@ -4,7 +4,7 @@
 let lastSentVideoId = null;
 let debounceTimer = null;
 
-const elementName = 'ytmusic-app'
+const elementName = 'ytmusic-player-bar'
 const NAMESPACE = 'ytmusic-grabber-v1';
 
 
