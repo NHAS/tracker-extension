@@ -4,7 +4,7 @@
 let lastSentVideoId = null;
 let debounceTimer = null;
 
-const elementName = 'movie_player'
+const elementName = '#movie_player'
 const NAMESPACE = 'ytmusic-grabber-v1';
 
 
@@ -12,7 +12,7 @@ function getVideoId() {
   console.log("[YTMusic Grabber] fetching track ID")
 
   const app = document.querySelector(elementName);
-  const data = app.playerApi?.getVideoData()
+  const data = app.getVideoData()
 
   if (data && data.video_id) {
     return data.video_id
@@ -27,7 +27,7 @@ function getCurrentTrack() {
 
 
   const app = document.querySelector(elementName);
-  const data = app.playerApi?.getVideoData()
+  const data = app.getVideoData()
 
 
   const videoId = getVideoId();
