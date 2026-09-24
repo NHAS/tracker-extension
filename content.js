@@ -4,7 +4,7 @@
 let lastSentVideoId = null;
 let debounceTimer = null;
 
-const elementName = 'ytmusic-player-bar'
+const elementName = 'movie_player'
 const NAMESPACE = 'ytmusic-grabber-v1';
 
 
@@ -18,7 +18,7 @@ function getVideoId() {
     return data.video_id
   }
 
-  console.log("[YTMusic Grabber] failed to get video data id: ", data)
+  alert("[YTMusic Grabber] failed to get video data id: ", data)
 
   return null;
 }
