@@ -24,7 +24,7 @@ web-ext lint --self-hosted
 web-ext build --overwrite-dest
 ```
 
-Then uplaod to the mozilla extensions platform
+Then upload to the mozilla extensions platform
 
 ## Usage
 
